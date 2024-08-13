@@ -1,6 +1,8 @@
 namespace CaseStudy_NewReportforCustoms.CaseStudy_NewReportforCustoms;
 
 using Microsoft.Inventory.Item;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.Pricing;
 
 
 codeunit 90100 "Item Subscribers"
@@ -48,4 +50,31 @@ codeunit 90100 "Item Subscribers"
     //             AllowClose := false;
     //     end;
     // end;
+
+
+
+
+    [EventSubscriber(ObjectType::Table, Database::"Sales Line", OnAfterValidateEvent, "No.", false, false)]
+    local procedure OnAfterValidateEvetnCheckSalesPrice(var Rec: Record "Sales Line")
+    var
+        SalesPrice: record "Sales Price";
+        Item: record Item;
+    begin
+        Rec."Price for Cust.Group Exist" := false;
+        if Rec."Document Type" in [Rec."Document Type"::Order, Rec."Document Type"::Invoice] then begin
+            if Rec.Type <> Rec.Type::Item then
+                exit;
+            if not Item.Get(Rec."No.") then
+                exit;
+            SalesPrice.Reset();
+            SalesPrice.SetRange("Item No.", Item."No.");
+            SalesPrice.SetFilter("Starting Date", '%1|<=%2', 0D, Today());
+            SalesPrice.SetRange("Sales Type", SalesPrice."Sales Type"::"Customer Price Group");
+            SalesPrice.SetRange("Sales Code", Rec."Customer Price Group");
+            if SalesPrice.FindFirst() then begin
+                Rec."Price for Cust.Group Exist" := true;
+                // Rec.Modify(false);
+            end;
+        end;
+    end;
 }
