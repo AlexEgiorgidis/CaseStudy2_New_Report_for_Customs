@@ -17,9 +17,9 @@ pageextension 90102 "Posted Sales Invoice" extends "Posted Sales Invoice"
                 Image = Print;
                 trigger OnAction()
                 begin
-                    // SalesInvHeader := Rec;
-                    // CurrPage.SetSelectionFilter(SalesInvHeader);
-                    Report.run(Report::"CustomSales Invoice", true, false, Rec);
+                    SalesInvHeader := Rec;
+                    CurrPage.SetSelectionFilter(SalesInvHeader);
+                    Report.run(Report::"CustomSales Invoice", true, false, SalesInvHeader);
                 end;
             }
         }

@@ -621,9 +621,12 @@ report 90100 "CustomSales Invoice"
                         if Item."Net Weight" <> 0 then begin
                             CalcQty := Quantity * Item."Net Weight";
                         end;
+                        message(format(CalcQty));
                         if (Item."Inventory Posting Group" <> '') and InvPostGr.Get(Item."Inventory Posting Group") then
                             if not InvPostGr."Print Out" then
-                                CurrReport.Skip();
+                                CurrReport.Skip()
+                            else
+                                message('%1 %2', Item."Inventory Posting Group", InvPostGr."Print Out");
                     end else
                         CurrReport.Skip();
                 end;
