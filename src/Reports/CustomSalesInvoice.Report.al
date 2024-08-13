@@ -76,6 +76,7 @@ report 90100 "CustomSales Invoice"
             DataItemTableView = sorting("No.");
             RequestFilterFields = "No.", "Sell-to Customer No.", "No. Printed";
             RequestFilterHeading = 'Posted Sales Invoice';
+
             column(CompanyAddress1; CompanyAddr[1])
             {
             }
@@ -515,7 +516,6 @@ report 90100 "CustomSales Invoice"
             column(ExternalDocumentNo_Lbl; FieldCaption("External Document No."))
             {
             }
-
             dataitem(Line; "Sales Invoice Line")
             {
                 DataItemLink = "Document No." = field("No.");
@@ -566,7 +566,9 @@ report 90100 "CustomSales Invoice"
                 column(CalcQty; CalcQty) // alexnir
                 {
                 }
-
+                column(CalcQty_Lbl; CalcQty_Lbl) //alexnir
+                {
+                }
 
                 trigger OnAfterGetRecord()
                 var
@@ -612,9 +614,10 @@ report 90100 "CustomSales Invoice"
 
                     FormatLineValues(Line);
 
-# alexnir
                     CalcQty := 0;
-                    if item.Get("No.") then begin
+                    if Item.Get("No.") then begin
+                        // if Item."Net Weight" = 0 then
+                        //     error('%1 for %2 can not be zero', Item.FieldCaption("Net Weight"), Item."No.");
                         if Item."Net Weight" <> 0 then begin
                             CalcQty := Quantity * Item."Net Weight";
                         end;
@@ -623,7 +626,6 @@ report 90100 "CustomSales Invoice"
                                 CurrReport.Skip();
                     end else
                         CurrReport.Skip();
-#endalexnir
                 end;
 
                 trigger OnPreDataItem()
@@ -711,7 +713,6 @@ report 90100 "CustomSales Invoice"
             trigger OnPreDataItem()
             begin
                 FirstLineHasBeenOutput := false;
-                //alexnir
             end;
         }
     }
@@ -1010,6 +1011,7 @@ report 90100 "CustomSales Invoice"
         PaymentTermsDescLbl: Label 'Payment Terms';
         ShptMethodDescLbl: Label 'Shipment Method';
         ShiptoAddrLbl: Label 'Ship-to Address';
+        CalcQty_Lbl: label 'Intrastat Qty';
 
     local procedure InitLogInteraction()
     begin
